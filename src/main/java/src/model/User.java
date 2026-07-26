@@ -1,9 +1,7 @@
 package src.model;
 
 import jakarta.persistence.*;
-import lombok.AccessLevel;
-import lombok.Data;
-import lombok.NoArgsConstructor;
+import lombok.*;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -14,14 +12,14 @@ import java.util.List;
 
 @Data
 @Entity
-@NoArgsConstructor(access= AccessLevel.PRIVATE, force = true)
+@NoArgsConstructor(access= AccessLevel.PUBLIC, force = true)
+@AllArgsConstructor
 @Table(name = "users")
 public class User implements UserDetails {
     @Serial
     private final static long serialVersionUID = 1L;
 
-    @Id
-    @GeneratedValue(strategy = GenerationType.AUTO)
+    @Id @GeneratedValue(strategy = GenerationType.AUTO)
     private Long id;
 
     String username;

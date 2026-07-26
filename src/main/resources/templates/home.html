@@ -1,0 +1,15 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:th="http://www.thymeleaf.org">
+<link rel="stylesheet" th:href="@{/styles.css}" />
+<head>
+    <meta charset="UTF-8">
+    <title>Blog Management</title>
+</head>
+<body>
+<h1>Welcome to Blog Blob</h1>
+<form method="POST" th:action="@{/logout}">
+    <input type="submit" value="Logout"/>
+</form>
+</body>
+</html>

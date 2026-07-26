@@ -15,8 +15,7 @@ import java.util.List;
 @NoArgsConstructor(access= AccessLevel.PRIVATE, force = true)
 @Table(name="posts")
 public class Post {
-    @Id
-            @GeneratedValue(strategy = GenerationType.AUTO)
+    @Id @GeneratedValue(strategy = GenerationType.AUTO)
     Long id;
 
     @CreationTimestamp

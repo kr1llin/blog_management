@@ -13,8 +13,7 @@ import java.time.Instant;
 @NoArgsConstructor(access= AccessLevel.PRIVATE, force = true)
 @Table(name = "comments")
 public class Comment {
-    @Id
-    @GeneratedValue(strategy = GenerationType.AUTO)
+    @Id @GeneratedValue(strategy = GenerationType.AUTO)
     Long id;
 
     String commentText;
