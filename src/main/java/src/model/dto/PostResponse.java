@@ -15,7 +15,7 @@ public class PostResponse {
     private String title;
     private String content;
     private String status;
-    private Instant createdDate;
+    private Instant createdAt;
     private String authorUsername;
     private Set<String> tags;
 }

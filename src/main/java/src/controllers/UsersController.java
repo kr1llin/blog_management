@@ -39,9 +39,4 @@ public class UsersController {
         regService.registerUser(regRequest);
         return "redirect:/login";
     }
-
-//    @GetMapping
-//    public String showUserBlog(Model model){
-//
-//    }
 }

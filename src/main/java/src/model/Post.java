@@ -33,7 +33,7 @@ public class Post {
     String title;
 
     @NotBlank
-    String body;
+    String content;
 
     @Enumerated(EnumType.STRING)
     PostStatus status;

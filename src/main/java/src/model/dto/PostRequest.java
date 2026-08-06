@@ -15,5 +15,7 @@ public class PostRequest {
     @NotBlank(message = "Content is mandatory")
     private String content;
 
+    private String status;
+
     private Set<String> tagNames;
 }
