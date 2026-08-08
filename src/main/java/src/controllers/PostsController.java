@@ -25,6 +25,7 @@ public class PostsController {
     PostProperties postProps;
 
     @PostMapping
+    @PreAuthorize("hasAnyRole('ADMIN', 'USER')")
     public ResponseEntity<PostResponse> createPost(@Valid @RequestBody PostRequest request, Authentication authentication){
         PostResponse response = postService.createPost(request, authentication.getName());
         return ResponseEntity.status(HttpStatus.CREATED).body(response);
@@ -39,12 +40,14 @@ public class PostsController {
     }
 
     @PatchMapping("/{id}")
+    @PreAuthorize("@auth.isPostOwner(#id, authentication.getName) or hasRole('ADMIN')")
     public ResponseEntity<PostResponse> patchPost(@PathVariable("id") Long id, @RequestBody PostRequest request){
         PostResponse response = postService.patchPost(id, request);
         return ResponseEntity.ok(response);
     }
 
     @DeleteMapping("/{id}")
+    @PreAuthorize("@auth.isPostOwner(#id, authentication.getName) or hasRole('ADMIN')")
     public ResponseEntity<Void> deletePost(@PathVariable("id") Long id){
         postService.deletePost(id);
         return ResponseEntity.status(HttpStatus.NO_CONTENT).body(null);
