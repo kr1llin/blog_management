@@ -13,7 +13,7 @@ import java.util.stream.Collectors;
 @Mapper(componentModel = "spring")
 public interface PostMapper {
     @Mapping(target = "authorUsername",  expression = "java(post.getAuthor().getUsername())")
-    @Mapping(target = "status", expression = "java(post.getStatus().name()")
+    @Mapping(target = "status", expression = "java(post.getStatus().name())")
     @Mapping(target = "tags", source = "tags", qualifiedByName = "tagsToStrings")
     PostResponse toResponse(Post post);
 

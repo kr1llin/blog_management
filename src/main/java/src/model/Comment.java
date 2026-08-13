@@ -26,4 +26,8 @@ public class Comment {
     @ManyToOne
     @JoinColumn(name = "author_id")
     User author;
+
+    @ManyToOne
+    @JoinColumn(name = "post_id")
+    Post post;
 }

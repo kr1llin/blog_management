@@ -6,7 +6,7 @@ import org.springframework.stereotype.Component;
 
 @Component
 @Data
-@ConfigurationProperties(prefix="blog_blob.posts")
+@ConfigurationProperties(prefix="blog-blob.posts")
 public class PostProperties {
     int pageSize = 20;
 }

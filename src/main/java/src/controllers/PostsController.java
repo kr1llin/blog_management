@@ -2,7 +2,6 @@ package src.controllers;
 
 import jakarta.validation.Valid;
 import lombok.AllArgsConstructor;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
@@ -11,10 +10,8 @@ import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.*;
 import src.configs.properties.PostProperties;
-import src.model.Post;
 import src.model.dto.PostRequest;
 import src.model.dto.PostResponse;
-import src.repositories.PostRepository;
 import src.services.PostService;
 
 @RestController

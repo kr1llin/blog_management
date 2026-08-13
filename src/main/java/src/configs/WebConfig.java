@@ -1,6 +1,10 @@
 package src.configs;
 
 import lombok.RequiredArgsConstructor;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.web.server.WebServerFactoryCustomizer;
+import org.springframework.boot.web.server.servlet.ConfigurableServletWebServerFactory;
+import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Sort;
@@ -15,9 +19,19 @@ import src.interceptors.LoggerInterceptor;
 import java.util.List;
 
 @Configuration
-@RequiredArgsConstructor
 public class WebConfig implements WebMvcConfigurer {
     PostProperties postProps;
+
+    @Autowired
+    public WebConfig(PostProperties postProps) {
+        this.postProps = postProps;
+    }
+
+    @Bean
+    public WebServerFactoryCustomizer<ConfigurableServletWebServerFactory>
+    webServerFactoryCustomizer() {
+        return factory -> factory.setContextPath("/api");
+    }
 
     @Override
     public void addViewControllers(ViewControllerRegistry registry){

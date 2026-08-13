@@ -19,7 +19,7 @@ import src.proxies.JwtTokenProvider;
 import src.services.RegistrationService;
 
 @RestController
-@RequestMapping("/api/auth")
+@RequestMapping("/auth")
 @RequiredArgsConstructor
 public class AuthenticationController {
 

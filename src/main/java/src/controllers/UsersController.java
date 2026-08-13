@@ -14,29 +14,5 @@ import src.services.RegistrationService;
 @Controller
 @RequestMapping("/users")
 public class UsersController {
-    final RegistrationService regService;
 
-    @ModelAttribute(name = "user")
-    public RegisterRequest user(){
-        return new RegisterRequest();
-    }
-
-    @Autowired
-    public UsersController(RegistrationService registrationService){
-        regService = registrationService;
-    }
-
-    @GetMapping("register")
-    public String registerForm() {
-        return "registration";
-    }
-
-    @PostMapping("register")
-    public String processRegistration(@ModelAttribute(name="user") RegisterRequest regRequest, Errors errors){
-        if (errors.hasErrors()){
-            return "redirect:/registration";
-        }
-        regService.registerUser(regRequest);
-        return "redirect:/login";
-    }
 }
