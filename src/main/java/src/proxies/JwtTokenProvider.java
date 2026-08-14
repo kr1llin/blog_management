@@ -33,11 +33,11 @@ public class JwtTokenProvider {
     public String generateToken(Authentication authentication) {
         UserDetails userDetails = (UserDetails) authentication.getPrincipal();
         Date now = new Date();
-        Date expiry = new Date(now.getTime() + expirationMs);
+        Date expire = new Date(now.getTime() + expirationMs);
         return Jwts.builder()
                 .setSubject(userDetails.getUsername())
                 .setIssuedAt(now)
-                .setExpiration(expiry)
+                .setExpiration(expire)
                 .signWith(Keys.hmacShaKeyFor(Decoders.BASE64.decode(secret)))
                 .compact();
     }

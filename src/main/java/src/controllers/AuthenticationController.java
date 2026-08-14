@@ -12,6 +12,7 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
+import src.model.User;
 import src.model.dto.JwtResponse;
 import src.model.dto.LoginRequest;
 import src.model.dto.RegisterRequest;
@@ -29,8 +30,8 @@ public class AuthenticationController {
 
     @PostMapping("/register")
     public ResponseEntity<?> register(@Valid @RequestBody RegisterRequest request) {
-        regService.registerUser(request);
-        return ResponseEntity.status(HttpStatus.CREATED).body("Registered");
+        User user = regService.registerUser(request);
+        return ResponseEntity.status(HttpStatus.CREATED).body("Registered: " + user);
     }
 
     // authenticate and generate token

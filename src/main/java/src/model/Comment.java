@@ -11,7 +11,7 @@ import java.time.Instant;
 
 @Data
 @Entity
-@NoArgsConstructor(access= AccessLevel.PRIVATE, force = true)
+@NoArgsConstructor
 @Table(name = "comments")
 public class Comment {
     @Id @GeneratedValue(strategy = GenerationType.AUTO)
