@@ -1,38 +1,34 @@
 package src;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.ObjectMapper;
-import org.junit.jupiter.api.BeforeEach;
+import org.springframework.security.config.annotation.method.configuration.EnableMethodSecurity;
+import org.springframework.test.web.servlet.result.MockMvcResultHandlers;
+import tools.jackson.databind.ObjectMapper;
 import org.junit.jupiter.api.Test;
+import org.mockito.ArgumentMatchers;
+import org.mockito.Mockito;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.resttestclient.autoconfigure.AutoConfigureRestTestClient;
-import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.boot.webmvc.test.autoconfigure.AutoConfigureMockMvc;
+import org.springframework.boot.test.context.TestConfiguration;
 import org.springframework.boot.webmvc.test.autoconfigure.WebMvcTest;
+import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.Import;
 import org.springframework.http.MediaType;
+import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.test.context.support.WithMockUser;
 import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.springframework.test.web.servlet.MockMvc;
-import org.springframework.test.web.servlet.client.RestTestClient;
-import src.BlogManagementApp;
+import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
+import org.springframework.test.web.servlet.result.MockMvcResultMatchers;
+import src.configs.properties.PostProperties;
 import src.controllers.PostsController;
-import src.model.Post;
-import src.model.PostStatus;
-import src.model.User;
 import src.model.dto.PostRequest;
 import src.model.dto.PostResponse;
+import src.proxies.JwtTokenProvider;
 import src.services.PostService;
 
-import java.util.Set;
-
-import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.ArgumentMatchers.eq;
-import static org.mockito.Mockito.when;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
+import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.csrf;
 
 @WebMvcTest(PostsController.class)
+@Import(PostControllerTest.TestConfig.class)
 public class PostControllerTest {
     @Autowired
     private MockMvc mvc;
@@ -40,8 +36,24 @@ public class PostControllerTest {
     @MockitoBean
     PostService postService;
 
-    @Autowired
-    private ObjectMapper objectMapper;
+    @MockitoBean
+    JwtTokenProvider jwtTokenProvider;
+
+    @MockitoBean
+    UserDetailsService userDetailsService;
+
+    private final ObjectMapper objectMapper = new ObjectMapper();
+
+    @TestConfiguration
+    @EnableMethodSecurity
+    static class TestConfig {
+        @Bean
+        PostProperties postProperties() {
+            PostProperties props = new PostProperties();
+            props.setPageSize(20);
+            return props;
+        }
+    }
 
     @Test
     @WithMockUser(username = "bob", roles = {"USER"})
@@ -57,13 +69,38 @@ public class PostControllerTest {
                 .authorUsername("bob")
                 .status("DRAFT").build();
 
-        when(postService.createPost(any(PostRequest.class), eq("bob"))).thenReturn(response);
+        Mockito.when(postService.createPost(ArgumentMatchers.any(PostRequest.class), ArgumentMatchers.eq("bob"))).thenReturn(response);
 
-        mvc.perform(post("/api/posts")
+        mvc.perform(MockMvcRequestBuilders.post("/posts")
+                .with(csrf())
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(objectMapper.writeValueAsString(request)))
-                .andExpect(status().isCreated())
-                .andExpect(jsonPath("$.title").value("Test Title"))
-                .andExpect(jsonPath("$.authorUsername").value("bob"));
+                .andExpect(MockMvcResultMatchers.status().isCreated())
+                .andExpect(MockMvcResultMatchers.jsonPath("$.title").value("TEST TITLE"))
+                .andExpect(MockMvcResultMatchers.jsonPath("$.authorUsername").value("bob"))
+                .andDo(MockMvcResultHandlers.print());
+    }
+
+    @Test
+    void unauthorizedCreatePost_HttpUnauthorized() throws Exception {
+        PostRequest request = new PostRequest();
+        request.setContent("TEST CONTENT");
+        request.setTitle("TEST TITLE");
+
+        PostResponse response = PostResponse.builder()
+                .id(1L)
+                .title("TEST TITLE")
+                .content("TEST CONTENT")
+                .authorUsername("unknown")
+                .status("DRAFT").build();
+
+        Mockito.when(postService.createPost(ArgumentMatchers.any(PostRequest.class), ArgumentMatchers.eq("unknown"))).thenReturn(response);
+
+        mvc.perform(MockMvcRequestBuilders.post("/posts")
+                        .with(csrf())
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(objectMapper.writeValueAsString(request)))
+                .andExpect(MockMvcResultMatchers.status().isUnauthorized())
+                .andDo(MockMvcResultHandlers.print());
     }
 }

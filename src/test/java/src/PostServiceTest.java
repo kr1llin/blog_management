@@ -1,18 +1,21 @@
 package src;
 
-import org.junit.jupiter.api.Assertions;
+import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.ArgumentMatchers;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
+import org.mockito.Mockito;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
+import org.springframework.test.context.bean.override.mockito.MockitoBean;
+import src.exceptions.ResourceNotFoundException;
 import src.model.Post;
 import src.model.PostStatus;
 import src.model.User;
-import src.model.Tag;
 import src.model.dto.PostRequest;
 import src.model.dto.PostResponse;
 import src.repositories.PostRepository;
@@ -25,10 +28,10 @@ import java.util.Optional;
 import java.util.Set;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.Mockito.*;
 
-@SpringBootTest
+@ExtendWith(MockitoExtension.class)
 class PostServiceTest {
 
     @Mock
@@ -80,26 +83,26 @@ class PostServiceTest {
 
     @Test
     void createPost_success() {
-        when(userRepository.findByUsername("bob")).thenReturn(Optional.of(author));
-        when(postMapper.toEntity(request)).thenReturn(post);
-        when(postRepository.save(any(Post.class))).thenReturn(post);
-        when(postMapper.toResponse(post)).thenReturn(response);
+        Mockito.when(userRepository.findByUsername("bob")).thenReturn(Optional.of(author));
+        Mockito.when(postMapper.toEntity(request)).thenReturn(post);
+        Mockito.when(postRepository.save(ArgumentMatchers.any(Post.class))).thenReturn(post);
+        Mockito.when(postMapper.toResponse(post)).thenReturn(response);
 
         PostResponse result = postService.createPost(request, "bob");
 
         assertThat(result).isNotNull();
-        assertThat(result.getTitle()).isEqualTo("Test Title");
-        assertThat(result.getAuthorUsername()).isEqualTo("bob");
-        verify(postRepository, times(1)).save(any(Post.class));
-        verify(postMapper, times(1)).toEntity(request);
+        Assertions.assertThat(result.getTitle()).isEqualTo("Test Title");
+        Assertions.assertThat(result.getAuthorUsername()).isEqualTo("bob");
+        Mockito.verify(postRepository, Mockito.times(1)).save(ArgumentMatchers.any(Post.class));
+        Mockito.verify(postMapper, Mockito.times(1)).toEntity(request);
     }
 
     @Test
     void createPost_userNotFound_throwsException() {
-        when(userRepository.findByUsername("foo")).thenReturn(Optional.empty());
+        Mockito.when(userRepository.findByUsername("foo")).thenReturn(Optional.empty());
 
-        Assertions.assertThrows(
-                UsernameNotFoundException.class,
+        assertThrows(
+                ResourceNotFoundException.class,
                 () -> postService.createPost(request, "foo")
         );
     }
